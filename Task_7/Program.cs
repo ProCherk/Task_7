@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Task_7
 {
@@ -11,6 +12,10 @@ namespace Task_7
             Console.OutputEncoding = System.Text.Encoding.Unicode;
 
             WeatherDays days = new WeatherDays();
+            WeatherParametersDay day = new WeatherParametersDay();
+
+            day.GetDayTemperature_File();
+            day.OutputDayTemperature();
 
             days.NumberCloudyDays();
             days.OutputConsoleNumberCloudyDays();
@@ -37,59 +42,34 @@ namespace Task_7
 
         public int NumberCloudyDays()
         {
-            foreach (KeyValuePair<int, int> i in day.WeatherTypePerDay)
+            foreach (KeyValuePair<int, int> i in day.weatherTypePerDay)
             {
                 if (i.Value == 7)
                     cloudyDays++; 
             }
 
+            Console.WriteLine();
             return cloudyDays;
         }
 
         public void OutputConsoleNumberCloudyDays()
         {
             Console.WriteLine($"Похмурих днів у травні 2019 року було - {cloudyDays}");
+            Console.WriteLine();
         }
     }
 
+
     class WeatherParametersDay
     {
-        public Dictionary<int, int> TemperaturePerDay = new Dictionary<int, int>
+        private Dictionary<int, int> temperaturePerDay = new Dictionary<int, int> { };
+        public Dictionary<int, int> TemperaturePerDay
         {
-            { 1, 11 },
-            { 2, 17 },
-            { 3, 21 },
-            { 4, 17 },
-            { 5, 18 },
-            { 6, 15 },
-            { 7, 13 },
-            { 8, 8 },
-            { 9, 8 },
-            { 10, 16 },
-            { 11, 18 },
-            { 12, 19 },
-            { 13, 21 },
-            { 14, 20 },
-            { 15, 19 },
-            { 16, 22 },
-            { 17, 25 },
-            { 18, 24 },
-            { 19, 23 },
-            { 20, 26 },
-            { 21, 22 },
-            { 22, 21 },
-            { 23, 22 },
-            { 24, 24 },
-            { 25, 20 },
-            { 26, 22 },
-            { 27, 25 },
-            { 28, 25 },
-            { 29, 22 },
-            { 30, 19 },
-            { 31, 21 }
-        };
+            get { return temperaturePerDay; }
+            set { temperaturePerDay = value; }
+        }
 
-        public Dictionary<int, int> TemperaturePerNight = new Dictionary<int, int>
+        private Dictionary<int, int> temperaturePerNight = new Dictionary<int, int>
         {
             { 1, 9 },
             { 2, 6 },
@@ -123,8 +103,13 @@ namespace Task_7
             { 30, 16 },
             { 31, 15 }
         };
+        public Dictionary<int, int> TemperaturePerNight
+        {
+            get { return temperaturePerNight; }
+            set { temperaturePerNight = value; }
+        }
 
-        public Dictionary<int, int> AtmospherePressurePerDay = new Dictionary<int, int>
+        private Dictionary<int, int> atmospherePressurePerDay = new Dictionary<int, int>
         {
             { 1, 729 },
             { 2, 730 },
@@ -158,14 +143,25 @@ namespace Task_7
             { 30, 740 },
             { 31, 742 }
         };
+        public Dictionary<int, int> AtmospherePressurePerDay
+        {
+            get { return atmospherePressurePerDay; }
+            set { atmospherePressurePerDay = value; }
+        }
 
-        //
-        public Dictionary<int, int> PrecipitationPerDay = new Dictionary<int, int>
+        //--------------------------------
+        private Dictionary<int, int> precipitationPerDay = new Dictionary<int, int>
         {
             {1, 0 }
         };
+        public Dictionary<int, int> PrecipitationPerDay
+        {
+            get { return precipitationPerDay; }
+            set { precipitationPerDay = value; }
+        }
 
-        public Dictionary<int, int> WeatherTypePerDay = new Dictionary<int, int>
+
+        public Dictionary<int, int> weatherTypePerDay = new Dictionary<int, int>
         {
             { 1, (int)Weather.Short_term_Rain },
             { 2, (int)Weather.Mainly_cloudy },
@@ -199,8 +195,48 @@ namespace Task_7
             { 30, (int)Weather.Thunderstorm },
             { 31, (int)Weather.Mainly_cloudy }
         };
+        public Dictionary<int, int> WeatherTypePerDay
+        {
+            get { return weatherTypePerDay; }
+            set { weatherTypePerDay = value; }
+        }
 
+        public Dictionary<int, int> GetDayTemperature_File()
+        {
+            char[] charSeparators = new char[] { ' ' };
+            string[] res;
+            int t;
+            int count = 0;
 
+            FileStream file_temp_day = new FileStream("Day temperature.txt", FileMode.Open, FileAccess.Read);
+            StreamReader fr = new StreamReader(file_temp_day);
+
+            string info = fr.ReadLine();
+            res = info.Split(charSeparators, StringSplitOptions.None);
+
+            foreach (string i in res)
+            {
+                if (int.TryParse(i, out t))
+                    temperaturePerDay.Add(count, t);
+                else
+                    Console.WriteLine($"У файлі є елемент не типу int - {i}");
+
+                count++;
+            }
+
+            Console.WriteLine();
+            return temperaturePerDay;
+        }
+
+        public void OutputDayTemperature()
+        {
+            Console.WriteLine("Щоденна температура у день за травень");
+            foreach (KeyValuePair<int, int> i in temperaturePerDay)
+            {
+                Console.WriteLine(i.Key + " - " + i.Value);
+
+            }
+        }
 
     }
 
