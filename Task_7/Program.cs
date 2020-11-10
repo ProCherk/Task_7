@@ -16,6 +16,9 @@ namespace Task_7
 
             day.GetDayTemperature_File();
             day.OutputDayTemperature();
+            day.GetNightTemperature_File();
+            day.OutputNightTemperature();
+
 
             days.NumberCloudyDays();
             days.OutputConsoleNumberCloudyDays();
@@ -69,40 +72,7 @@ namespace Task_7
             set { temperaturePerDay = value; }
         }
 
-        private Dictionary<int, int> temperaturePerNight = new Dictionary<int, int>
-        {
-            { 1, 9 },
-            { 2, 6 },
-            { 3, 10 },
-            { 4, 10 },
-            { 5, 9 },
-            { 6, 12 },
-            { 7, 12 },
-            { 8, 6 },
-            { 9, 6 },
-            { 10, 6 },
-            { 11, 9 },
-            { 12, 9 },
-            { 13, 10 },
-            { 14, 12 },
-            { 15, 13 },
-            { 16, 13 },
-            { 17, 17 },
-            { 18, 19 },
-            { 19, 15 },
-            { 20, 17 },
-            { 21, 18 },
-            { 22, 10 },
-            { 23, 14 },
-            { 24, 16 },
-            { 25, 13 },
-            { 26, 14 },
-            { 27, 15 },
-            { 28, 18 },
-            { 29, 16 },
-            { 30, 16 },
-            { 31, 15 }
-        };
+        private Dictionary<int, int> temperaturePerNight = new Dictionary<int, int> { };
         public Dictionary<int, int> TemperaturePerNight
         {
             get { return temperaturePerNight; }
@@ -160,7 +130,6 @@ namespace Task_7
             set { precipitationPerDay = value; }
         }
 
-
         public Dictionary<int, int> weatherTypePerDay = new Dictionary<int, int>
         {
             { 1, (int)Weather.Short_term_Rain },
@@ -206,7 +175,7 @@ namespace Task_7
             char[] charSeparators = new char[] { ' ' };
             string[] res;
             int t;
-            int count = 0;
+            int count = 1;
 
             FileStream file_temp_day = new FileStream("Day temperature.txt", FileMode.Open, FileAccess.Read);
             StreamReader fr = new StreamReader(file_temp_day);
@@ -223,6 +192,8 @@ namespace Task_7
 
                 count++;
             }
+            fr.Close();
+            file_temp_day.Close();
 
             Console.WriteLine();
             return temperaturePerDay;
@@ -238,6 +209,44 @@ namespace Task_7
             }
         }
 
+        public Dictionary<int, int> GetNightTemperature_File()
+        {
+            char[] charSeparators = new char[] { ' ' };
+            string[] res;
+            int t;
+            int count = 1;
+
+            FileStream file_temp_night = new FileStream("Night temperature.txt", FileMode.Open, FileAccess.Read);
+            StreamReader fr = new StreamReader(file_temp_night);
+
+            string info = fr.ReadLine();
+            res = info.Split(charSeparators, StringSplitOptions.None);
+
+            foreach (string i in res)
+            {
+                if (int.TryParse(i, out t))
+                    temperaturePerNight.Add(count, t);
+                else
+                    Console.WriteLine($"У файлі є елемент не типу int - {i}");
+
+                count++;
+            }
+            fr.Close();
+            file_temp_night.Close();
+
+            Console.WriteLine();
+            return temperaturePerNight;
+        }
+
+        public void OutputNightTemperature()
+        {
+            Console.WriteLine("Щоденна температура вночі за травень");
+            foreach (KeyValuePair<int, int> i in temperaturePerNight)
+            {
+                Console.WriteLine(i.Key + " - " + i.Value);
+
+            }
+        }
     }
 
     enum Weather
