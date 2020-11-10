@@ -16,8 +16,15 @@ namespace Task_7
 
             day.GetDayTemperature_File();
             day.OutputDayTemperature();
+
             day.GetNightTemperature_File();
             day.OutputNightTemperature();
+            
+            day.GetAtmospherePressure_File();
+            day.OutputAtmospherePressure();
+            
+            day.GetPrecipitation();
+            day.OutputPrecipitation();
 
 
             days.NumberCloudyDays();
@@ -79,40 +86,7 @@ namespace Task_7
             set { temperaturePerNight = value; }
         }
 
-        private Dictionary<int, int> atmospherePressurePerDay = new Dictionary<int, int>
-        {
-            { 1, 729 },
-            { 2, 730 },
-            { 3, 732 },
-            { 4, 734 },
-            { 5, 734 },
-            { 6, 732 },
-            { 7, 731 },
-            { 8, 737 },
-            { 9, 737 },
-            { 10, 735 },
-            { 11, 735 },
-            { 12, 742 },
-            { 13, 744 },
-            { 14, 742 },
-            { 15, 740 },
-            { 16, 739 },
-            { 17, 738 },
-            { 18, 738 },
-            { 19, 737 },
-            { 20, 737 },
-            { 21, 735 },
-            { 22, 735 },
-            { 23, 734 },
-            { 24, 735 },
-            { 25, 734 },
-            { 26, 737 },
-            { 27, 740 },
-            { 28, 738 },
-            { 29, 737 },
-            { 30, 740 },
-            { 31, 742 }
-        };
+        private Dictionary<int, int> atmospherePressurePerDay = new Dictionary<int, int> { };
         public Dictionary<int, int> AtmospherePressurePerDay
         {
             get { return atmospherePressurePerDay; }
@@ -120,10 +94,7 @@ namespace Task_7
         }
 
         //--------------------------------
-        private Dictionary<int, int> precipitationPerDay = new Dictionary<int, int>
-        {
-            {1, 0 }
-        };
+        private Dictionary<int, int> precipitationPerDay = new Dictionary<int, int> { };
         public Dictionary<int, int> PrecipitationPerDay
         {
             get { return precipitationPerDay; }
@@ -242,6 +213,84 @@ namespace Task_7
         {
             Console.WriteLine("Щоденна температура вночі за травень");
             foreach (KeyValuePair<int, int> i in temperaturePerNight)
+            {
+                Console.WriteLine(i.Key + " - " + i.Value);
+
+            }
+        }
+
+        public Dictionary<int, int> GetAtmospherePressure_File()
+        {
+            char[] charSeparators = new char[] { ' ' };
+            string[] res;
+            int t;
+            int count = 1;
+
+            FileStream file_atm = new FileStream("Atmosphere pressure.txt", FileMode.Open, FileAccess.Read);
+            StreamReader fr = new StreamReader(file_atm);
+
+            string info = fr.ReadLine();
+            res = info.Split(charSeparators, StringSplitOptions.None);
+
+            foreach (string i in res)
+            {
+                if (int.TryParse(i, out t))
+                    atmospherePressurePerDay.Add(count, t);
+                else
+                    Console.WriteLine($"У файлі є елемент не типу int - {i}");
+
+                count++;
+            }
+            fr.Close();
+            file_atm.Close();
+
+            Console.WriteLine();
+            return atmospherePressurePerDay;
+        }
+
+        public void OutputAtmospherePressure()
+        {
+            Console.WriteLine("Щоденний тиск за травень");
+            foreach (KeyValuePair<int, int> i in atmospherePressurePerDay)
+            {
+                Console.WriteLine(i.Key + " - " + i.Value);
+
+            }
+        }
+
+        public Dictionary<int, int> GetPrecipitation()
+        {
+            char[] charSeparators = new char[] { ' ' };
+            string[] res;
+            int t;
+            int count = 1;
+
+            FileStream file_prp = new FileStream("Precipitation.txt", FileMode.Open, FileAccess.Read);
+            StreamReader fr = new StreamReader(file_prp);
+
+            string info = fr.ReadLine();
+            res = info.Split(charSeparators, StringSplitOptions.None);
+
+            foreach (string i in res)
+            {
+                if (int.TryParse(i, out t))
+                    precipitationPerDay.Add(count, t);
+                else
+                    Console.WriteLine($"У файлі є елемент не типу int - {i}");
+
+                count++;
+            }
+            fr.Close();
+            file_prp.Close();
+
+            Console.WriteLine();
+            return precipitationPerDay;
+        }
+
+        public void OutputPrecipitation()
+        {
+            Console.WriteLine("Щоденны опади за травень");
+            foreach (KeyValuePair<int, int> i in precipitationPerDay)
             {
                 Console.WriteLine(i.Key + " - " + i.Value);
 
