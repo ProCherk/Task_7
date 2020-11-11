@@ -11,30 +11,36 @@ namespace Task_7
             Console.InputEncoding = System.Text.Encoding.Unicode;
             Console.OutputEncoding = System.Text.Encoding.Unicode;
 
+            WeatherParametersDay param_day = new WeatherParametersDay();
             WeatherDays days = new WeatherDays();
-            WeatherParametersDay day = new WeatherParametersDay();
 
-            day.GetDayTemperature_File();
-            day.OutputDayTemperature();
+            param_day.GetDayTemperature_File();
+            param_day.OutputDayTemperature();
 
-            day.GetNightTemperature_File();
-            day.OutputNightTemperature();
+            param_day.GetNightTemperature_File();
+            param_day.OutputNightTemperature();
             
-            day.GetAtmospherePressure_File();
-            day.OutputAtmospherePressure();
+            param_day.GetAtmospherePressure_File();
+            param_day.OutputAtmospherePressure();
             
-            day.GetPrecipitation();
-            day.OutputPrecipitation();
+            param_day.GetPrecipitation();
+            param_day.OutputPrecipitation();
 
-
+            param_day.GetWeatherType();
+            param_day.OutputWeatherType();
+            
+            
             days.NumberCloudyDays();
             days.OutputConsoleNumberCloudyDays();
+
+            days.NumberRainyDays();
+            days.OutputConsoleNumberRainyDays();
         }
     }
 
-    class WeatherDays
+    class WeatherDays : WeatherParametersDay
     {
-        WeatherParametersDay day = new WeatherParametersDay();
+        //readonly WeatherParametersDay day = new WeatherParametersDay();
 
         private int cloudyDays = 0;
         public int CloudyDays
@@ -43,18 +49,18 @@ namespace Task_7
             set { cloudyDays = value; }
         }
 
-        private int percipitationDays = 0;
-        public int PercipitationDays
+        private int precipitationDays = 0;
+        public int PrecipitationDays
         {
-            get { return percipitationDays; }
-            set { percipitationDays = value; }
+            get { return precipitationDays; }
+            set { precipitationDays = value; }
         }
 
         public int NumberCloudyDays()
         {
-            foreach (KeyValuePair<int, int> i in day.weatherTypePerDay)
+            foreach (KeyValuePair<int, int> i in WeatherTypePerDay)
             {
-                if (i.Value == 7)
+                if (i.Value == 7 )
                     cloudyDays++; 
             }
 
@@ -65,6 +71,24 @@ namespace Task_7
         public void OutputConsoleNumberCloudyDays()
         {
             Console.WriteLine($"Похмурих днів у травні 2019 року було - {cloudyDays}");
+            Console.WriteLine();
+        }
+
+        public int NumberRainyDays()
+        {
+            foreach(KeyValuePair<int, int> i in PrecipitationPerDay)
+            {
+                if (i.Value == 2 || i.Value == 3 || i.Value == 4)
+                    precipitationDays++;
+            }
+
+            Console.WriteLine();
+            return precipitationDays;
+        }
+
+        public void OutputConsoleNumberRainyDays()
+        {
+            Console.WriteLine($"Дощових днів у травні 2019 року було - {precipitationDays}");
             Console.WriteLine();
         }
     }
@@ -93,7 +117,6 @@ namespace Task_7
             set { atmospherePressurePerDay = value; }
         }
 
-        //--------------------------------
         private Dictionary<int, int> precipitationPerDay = new Dictionary<int, int> { };
         public Dictionary<int, int> PrecipitationPerDay
         {
@@ -101,40 +124,7 @@ namespace Task_7
             set { precipitationPerDay = value; }
         }
 
-        public Dictionary<int, int> weatherTypePerDay = new Dictionary<int, int>
-        {
-            { 1, (int)Weather.Short_term_Rain },
-            { 2, (int)Weather.Mainly_cloudy },
-            { 3, (int)Weather.Mainly_cloudy },
-            { 4, (int)Weather.Mainly_cloudy },
-            { 5, (int)Weather.Mainly_cloudy },
-            { 6, (int)Weather.Short_term_Rain },
-            { 7, (int)Weather.Thunderstorm },
-            { 8, (int)Weather.Mainly_cloudy },
-            { 9, (int)Weather.Mainly_cloudy },
-            { 10, (int)Weather.Mainly_cloudy },
-            { 11, (int)Weather.Rain },
-            { 12, (int)Weather.Mainly_cloudy },
-            { 13, (int)Weather.Mainly_cloudy},
-            { 14, (int)Weather.Mainly_cloudy },
-            { 15, (int)Weather.Mainly_cloudy },
-            { 16, (int)Weather.Mainly_cloudy },
-            { 17, (int)Weather.Mainly_cloudy },
-            { 18, (int)Weather.Thunderstorm },
-            { 19, (int)Weather.Thunderstorm },
-            { 20, (int)Weather.Sunny },
-            { 21, (int)Weather.Thunderstorm },
-            { 22, (int)Weather.Mainly_cloudy },
-            { 23, (int)Weather.Mainly_cloudy },
-            { 24, (int)Weather.Thunderstorm },
-            { 25, (int)Weather.Thunderstorm },
-            { 26, (int)Weather.Sunny },
-            { 27, (int)Weather.Mainly_cloudy },
-            { 28, (int)Weather.Sunny },
-            { 29, (int)Weather.Thunderstorm },
-            { 30, (int)Weather.Thunderstorm },
-            { 31, (int)Weather.Mainly_cloudy }
-        };
+        public Dictionary<int, int> weatherTypePerDay = new Dictionary<int, int> { };
         public Dictionary<int, int> WeatherTypePerDay
         {
             get { return weatherTypePerDay; }
@@ -145,7 +135,6 @@ namespace Task_7
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
-            int t;
             int count = 1;
 
             FileStream file_temp_day = new FileStream("Day temperature.txt", FileMode.Open, FileAccess.Read);
@@ -156,7 +145,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out t))
+                if (int.TryParse(i, out int t))
                     temperaturePerDay.Add(count, t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -184,7 +173,6 @@ namespace Task_7
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
-            int t;
             int count = 1;
 
             FileStream file_temp_night = new FileStream("Night temperature.txt", FileMode.Open, FileAccess.Read);
@@ -195,7 +183,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out t))
+                if (int.TryParse(i, out int t))
                     temperaturePerNight.Add(count, t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -223,7 +211,6 @@ namespace Task_7
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
-            int t;
             int count = 1;
 
             FileStream file_atm = new FileStream("Atmosphere pressure.txt", FileMode.Open, FileAccess.Read);
@@ -234,7 +221,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out t))
+                if (int.TryParse(i, out int t))
                     atmospherePressurePerDay.Add(count, t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -262,7 +249,6 @@ namespace Task_7
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
-            int t;
             int count = 1;
 
             FileStream file_prp = new FileStream("Precipitation.txt", FileMode.Open, FileAccess.Read);
@@ -273,7 +259,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out t))
+                if (int.TryParse(i, out int t))
                     precipitationPerDay.Add(count, t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -289,14 +275,54 @@ namespace Task_7
 
         public void OutputPrecipitation()
         {
-            Console.WriteLine("Щоденны опади за травень");
+            Console.WriteLine("Щоденні опади за травень");
             foreach (KeyValuePair<int, int> i in precipitationPerDay)
             {
                 Console.WriteLine(i.Key + " - " + i.Value);
 
             }
         }
+
+        public Dictionary<int, int> GetWeatherType()
+        {
+            char[] charSeparators = new char[] { ' ' };
+            string[] res;
+            int count = 1;
+
+            FileStream file_wt = new FileStream("Weather type.txt", FileMode.Open, FileAccess.Read);
+            StreamReader fr = new StreamReader(file_wt);
+
+            string info = fr.ReadLine();
+            res = info.Split(charSeparators, StringSplitOptions.None);
+
+            foreach (string i in res)
+            {
+                if (int.TryParse(i, out int t))
+                    weatherTypePerDay.Add(count, t);
+                else
+                    Console.WriteLine($"У файлі є елемент не типу int - {i}");
+
+                count++;
+            }
+            fr.Close();
+            file_wt.Close();
+
+            Console.WriteLine();
+            return weatherTypePerDay;
+        }
+
+        public void OutputWeatherType()
+        {
+            Console.WriteLine("Щоденна погода за травень");
+            foreach (KeyValuePair<int, int> i in weatherTypePerDay)
+            {
+                string a = Enum.GetName(typeof(Weather), i.Value);
+
+                Console.WriteLine(i.Key + " - " + a);
+            }
+        }
     }
+
 
     enum Weather
     {
