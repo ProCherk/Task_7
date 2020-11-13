@@ -6,130 +6,172 @@ namespace Task_7
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             Console.InputEncoding = System.Text.Encoding.Unicode;
             Console.OutputEncoding = System.Text.Encoding.Unicode;
 
-            WeatherParametersDay param_day = new WeatherParametersDay();
-            WeatherDays days = new WeatherDays();
+            WeatherParametersDay.GetDayTemperature_File();
+            WeatherParametersDay.OutputDayTemperature();
 
-            param_day.GetDayTemperature_File();
-            param_day.OutputDayTemperature();
+            WeatherParametersDay.GetNightTemperature_File();
+            WeatherParametersDay.OutputNightTemperature();
 
-            param_day.GetNightTemperature_File();
-            param_day.OutputNightTemperature();
-            
-            param_day.GetAtmospherePressure_File();
-            param_day.OutputAtmospherePressure();
-            
-            param_day.GetPrecipitation();
-            param_day.OutputPrecipitation();
+            WeatherParametersDay.GetAtmospherePressure_File();
+            WeatherParametersDay.OutputAtmospherePressure();
 
-            param_day.GetWeatherType();
-            param_day.OutputWeatherType();
-            //Console.WriteLine(param_day.WeatherTypePerDay[4]);
-            
-            days.NumberCloudyDays();
-            days.OutputConsoleNumberCloudyDays();
+            WeatherParametersDay.GetPrecipitation();
+            WeatherParametersDay.OutputPrecipitation();
 
-            days.NumberRainyDays();
-            days.OutputConsoleNumberRainyDays();
+            WeatherParametersDay.GetWeatherType();
+            WeatherParametersDay.OutputWeatherType();
+
+            WeatherDays.NumberCloudyDays();
+            WeatherDays.OutputConsoleNumberCloudyDays();
+
+            WeatherDays.NumberRainyDays();
+            WeatherDays.OutputConsoleNumberRainyDays();
+
+            WeatherDays.MidPrecipitation();
+            WeatherDays.OutputConsoleMidPrecipitation();
         }
     }
 
     class WeatherDays
     {
-        WeatherParametersDay a = new WeatherParametersDay();
 
-        private int cloudyDays;
-        public int CloudyDays
+        private static int cloudyDays;
+        public static int CloudyDays
         {
             get { return cloudyDays; }
             set { cloudyDays = value; }
         }
 
-        private int precipitationDays;
-        public int PrecipitationDays
+        private static int precipitationDays;
+        public static int PrecipitationDays
         {
             get { return precipitationDays; }
             set { precipitationDays = value; }
         }
 
-        public int NumberCloudyDays()
+        private static double midPrecipitationMonth = 0;
+        public static double PrecipitationMonth
         {
-            foreach (int i in a.WeatherTypePerDay)
+            get { return midPrecipitationMonth; }
+            set { midPrecipitationMonth = value; }
+        }
+
+        private static List<double> prDays = new List<double> ();
+        public static List<double> PrDays
+        {
+            get { return prDays; }
+            set { prDays = value; }
+        }
+
+        //Метод обраховує к-сть хмарних днів
+        public static int NumberCloudyDays()
+        {
+            foreach (int i in WeatherParametersDay.WeatherTypePerDay)
             {
                 if (i == 7 )
                     cloudyDays++; 
             }
+
             Console.WriteLine();
             return cloudyDays;
         }
 
-        public void OutputConsoleNumberCloudyDays()
+        public static void OutputConsoleNumberCloudyDays()
         {
             Console.WriteLine($"Похмурих днів у травні 2019 року було - {cloudyDays}");
             Console.WriteLine();
         }
-
-        public int NumberRainyDays()
+        //Метод обраховує к-сть дощових днів
+        public static int NumberRainyDays()
         {
-            foreach(int i in a.PrecipitationPerDay)
+            int count = 0;
+            foreach(int i in WeatherParametersDay.PrecipitationPerDay)
             {
-                if (i == 2 || i == 3 || i == 4)
+                if (i > 0)
+                {
                     precipitationDays++;
+                    prDays.Add(count);
+                }
+                count++;
             }
             Console.WriteLine();
             return precipitationDays;
         }
 
-        public void OutputConsoleNumberRainyDays()
+        public static void OutputConsoleNumberRainyDays()
         {
             Console.WriteLine($"Дощових днів у травні 2019 року було - {precipitationDays}");
             Console.WriteLine();
         }
-    }
+        //Метод обраховує середню к-сть опадів за місяць
+        public static double MidPrecipitation()
+        {
+            int count = 0;
+            foreach (int i in prDays)
+            {
+                count++;
+                midPrecipitationMonth += WeatherParametersDay.PrecipitationPerDay[i];
+            }
+            midPrecipitationMonth /= count;
+            midPrecipitationMonth = Math.Round(midPrecipitationMonth, 2);
 
+            Console.WriteLine();
+            return midPrecipitationMonth;
+        }
+
+        public static void OutputConsoleMidPrecipitation()
+        {
+            Console.WriteLine($"Середня к-сть опадів у травні 2019 року  - {midPrecipitationMonth} мм.");
+            Console.WriteLine();
+        }
+    }
 
     class WeatherParametersDay
     {
-        private List<int> temperaturePerDay = new List<int>();
-        public List<int> TemperaturePerDay
+        private static List<double> temperaturePerDay = new List<double>();
+        public static List<double> TemperaturePerDay
         {
             get { return temperaturePerDay; }
             set { temperaturePerDay = value; }
         }
 
-        private List<int> temperaturePerNight = new List<int>();
-        public List<int> TemperaturePerNight
+        private static List<double> temperaturePerNight = new List<double>();
+        public static List<double> TemperaturePerNight
         {
             get { return temperaturePerNight; }
             set { temperaturePerNight = value; }
         }
 
-        private List<int> atmospherePressurePerDay = new List<int>();
-        public List<int> AtmospherePressurePerDay
+        private static List<double> atmospherePressurePerDay = new List<double>();
+        public static List<double> AtmospherePressurePerDay
         {
             get { return atmospherePressurePerDay; }
             set { atmospherePressurePerDay = value; }
         }
 
-        private List<int> precipitationPerDay = new List<int>();
-        public List<int> PrecipitationPerDay
+        private static List<double> precipitationPerDay = new List<double>();
+        public static List<double> PrecipitationPerDay
         {
             get { return precipitationPerDay; }
             set { precipitationPerDay = value; }
         }
 
-        private List<int> weatherTypePerDay = new List<int>();
-        public List<int> WeatherTypePerDay
+        private static List<double> weatherTypePerDay = new List<double>();
+        public static List<double> WeatherTypePerDay
         {
             get { return weatherTypePerDay; }
             set { weatherTypePerDay = value; }
         }
+        //Методи Get - отримання данних з файлів
+        //Методи Output - вивід данних у консоль
 
-        public List<int> GetDayTemperature_File()
+        public static List<double> GetDayTemperature_File()
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
@@ -142,7 +184,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out int t))
+                if (double.TryParse(i, out double t))
                     temperaturePerDay.Add( t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -156,10 +198,13 @@ namespace Task_7
             return temperaturePerDay;
         }
 
-        public void OutputDayTemperature()
+        public static void OutputDayTemperature()
         {
             int count = 1;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Щоденна температура у день за травень");
+            Console.ResetColor();
+
             foreach ( int i in temperaturePerDay)
             {
                 Console.WriteLine(count + " - " + i);
@@ -167,7 +212,7 @@ namespace Task_7
             }
         }
 
-        public List<int> GetNightTemperature_File()
+        public static List<double> GetNightTemperature_File()
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
@@ -180,7 +225,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out int t))
+                if (double.TryParse(i, out double t))
                     temperaturePerNight.Add(t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -193,10 +238,13 @@ namespace Task_7
             return temperaturePerNight;
         }
 
-        public void OutputNightTemperature()
+        public static void OutputNightTemperature()
         {
             int count = 1;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Щоденна температура вночі за травень");
+            Console.ResetColor();
+
             foreach (int i in temperaturePerNight)
             {
                 Console.WriteLine(count + " - " + i);
@@ -204,7 +252,7 @@ namespace Task_7
             }
         }
 
-        public List<int> GetAtmospherePressure_File()
+        public static List<double> GetAtmospherePressure_File()
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
@@ -217,7 +265,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out int t))
+                if (double.TryParse(i, out double t))
                     atmospherePressurePerDay.Add( t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -230,18 +278,21 @@ namespace Task_7
             return atmospherePressurePerDay;
         }
 
-        public void OutputAtmospherePressure()
+        public static void OutputAtmospherePressure()
         {
             int count = 1;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Щоденний тиск за травень");
+            Console.ResetColor();
+
             foreach (int i in atmospherePressurePerDay)
             {
                 Console.WriteLine(count + " - " + i);
                 count++;
             }
         }
-
-        public List<int> GetPrecipitation()
+         
+        public static List<double> GetPrecipitation()
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
@@ -254,7 +305,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out int t))
+                if (double.TryParse(i, out double t))
                     precipitationPerDay.Add(t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -267,10 +318,13 @@ namespace Task_7
             return precipitationPerDay;
         }
 
-        public void OutputPrecipitation()
+        public static void OutputPrecipitation()
         {
             int count = 1;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Щоденні опади за травень");
+            Console.ResetColor();
+
             foreach (int i in precipitationPerDay)
             {
                 Console.WriteLine(count + " - " + i);
@@ -278,7 +332,7 @@ namespace Task_7
             }
         }
 
-        public List<int> GetWeatherType()
+        public static List<double> GetWeatherType()
         {
             char[] charSeparators = new char[] { ' ' };
             string[] res;
@@ -291,7 +345,7 @@ namespace Task_7
 
             foreach (string i in res)
             {
-                if (int.TryParse(i, out int t))
+                if (double.TryParse(i, out double t))
                     weatherTypePerDay.Add(t);
                 else
                     Console.WriteLine($"У файлі є елемент не типу int - {i}");
@@ -304,10 +358,13 @@ namespace Task_7
             return weatherTypePerDay;
         }
 
-        public void OutputWeatherType()
+        public static void OutputWeatherType()
         {
             int count = 1;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Щоденна погода за травень");
+            Console.ResetColor();
+
             foreach (int i in weatherTypePerDay)
             {
                 string a = Enum.GetName(typeof(Weather), i);
@@ -317,8 +374,7 @@ namespace Task_7
             }
         }
     }
-
-
+    //Перебір можливих варіантів погоди
     enum Weather
     {
         Undefined = 1,
